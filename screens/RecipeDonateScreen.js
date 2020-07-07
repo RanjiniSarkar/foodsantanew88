@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     alignItems:'center'
   },
   button:{
-    width:300,
+    width:150,
         height:50,
         justifyContent:'center',
         alignItems:'center',

@@ -147,12 +147,13 @@ const styles = StyleSheet.create({
       padding:10
     },
     button:{
-      width:300,
+      width:150,
       height:50,
       justifyContent:'center',
       alignItems:'center',
       borderRadius:25,
       backgroundColor:"#ff00c3",
+      marginTop:20,
       shadowColor: "#000",
       shadowOffset: {
          width: 0,

@@ -9,6 +9,7 @@ import SettingScreen from './screens/SettingScreen'
 import CustomSideBarMenu from './components/CustomSideBarMenu';
 import MyFoodDonationScreen from './screens/MyFoodDonationScreen';
 import MyRecipeDonationScreen from './screens/MyRecipeDonationScreen'
+import NotificationScreen from './screens/NotificationScreen';
 
 
 
@@ -36,6 +37,9 @@ export default function App (){
     },
     MyRecipeDonations:{
       screen: MyRecipeDonationScreen
+    },
+    Notifications:{
+      screen:NotificationScreen
     }
 },
 {
