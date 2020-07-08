@@ -56,7 +56,7 @@ export default class RecieverDetailsScreen extends Component{
   }
 
   updateRecipeStatus=()=>{
-    db.collection('all_donations1').add({
+    db.collection('all_rdonations').add({
       "recipe_name"           : this.state.recipename,
       "request_id"          : this.state.requestId,
       "requested_by"        : this.state.recieverName,

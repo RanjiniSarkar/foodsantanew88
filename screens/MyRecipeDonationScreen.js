@@ -11,7 +11,7 @@ export default class MyRecipeDonationScreen extends Component {
      this.state = {
        donorId : firebase.auth().currentUser.email,
        donorName : "",
-       allDonations : []
+       allRDonations : []
      }
      this.requestRef= null
    }
@@ -29,17 +29,17 @@ export default class MyRecipeDonationScreen extends Component {
      })
    }
 
-   getAllDonations =()=>{
-     this.requestRef = db.collection("all_donations1").where("donor_id" ,'==', this.state.donorId)
+   getAllRDonations =()=>{
+     this.requestRef = db.collection("all_rdonations").where("donor_id" ,'==', this.state.donorId)
      .onSnapshot((snapshot)=>{
-       var all_donations1 = []
+       var allRDonations = []
        snapshot.docs.map((doc) =>{
          var donation = doc.data()
          donation["doc_id"] = doc.id
-         allDonations.push(donation)
+         allRDonations.push(donation)
        });
        this.setState({
-         allDonations1 : allDonations1
+         allRDonations : allRDonations
        });
      })
    }
@@ -47,14 +47,14 @@ export default class MyRecipeDonationScreen extends Component {
    sendRecipe=(recipeDetails)=>{
      if(recipeDetails.request_status === "Recipe Sent"){
        var requestStatus = "Donor Interested"
-       db.collection("all_donations").doc(recipeDetails.doc_id).update({
+       db.collection("all_rdonations").doc(recipeDetails.doc_id).update({
          "request_status" : "Donor Interested"
        })
        this.sendNotification(recipeDetails,requestStatus)
      }
      else{
        var requestStatus = "Recipe Sent"
-       db.collection("all_donations").doc(recipeDetails.doc_id).update({
+       db.collection("all_rdonations").doc(recipeDetails.doc_id).update({
          "request_status" : "Recipe Sent"
        })
        this.sendNotification(recipeDetails,requestStatus)
@@ -118,7 +118,7 @@ export default class MyRecipeDonationScreen extends Component {
 
    componentDidMount(){
      this.getDonorDetails(this.state.donorId)
-     this.getAllDonations()
+     this.getAllRDonations()
    }
 
    componentWillUnmount(){
@@ -131,7 +131,7 @@ export default class MyRecipeDonationScreen extends Component {
          <MyHeader navigation={this.props.navigation} title="My Donations"/>
          <View style={{flex:1}}>
            {
-             this.state.allDonations.length === 0
+             this.state.allRDonations.length === 0
              ?(
                <View style={styles.subtitle}>
                  <Text style={{ fontSize: 20}}>List of all recipe Donations</Text>
@@ -140,7 +140,7 @@ export default class MyRecipeDonationScreen extends Component {
              :(
                <FlatList
                  keyExtractor={this.keyExtractor}
-                 data={this.state.allDonations}
+                 data={this.state.allRDonations}
                  renderItem={this.renderItem}
                />
              )
