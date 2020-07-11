@@ -128,7 +128,7 @@ export default class MyFoodDonationScreen extends Component {
    render(){
      return(
        <View style={{flex:1}}>
-         <MyHeader navigation={this.props.navigation} title="My Donations"/>
+         <MyHeader navigation={this.props.navigation} title="My FoodDonations"/>
          <View style={{flex:1}}>
            {
              this.state.allDonations.length === 0

@@ -44,9 +44,9 @@ export default class RecipeDonateScreen extends Component{
         rightElement={
             <TouchableOpacity style={styles.button}
             onPress ={()=>{
-              this.props.navigation.navigate("RecieverDetails1",{"details": item})
+              this.props.navigation.navigate("RecieverDetailsRecipe",{"details": item})
             }}
-             >
+            >
               <Text style={{color:'#ffff'}}>View</Text>
             </TouchableOpacity>
           }
@@ -58,7 +58,7 @@ export default class RecipeDonateScreen extends Component{
   render(){
     return(
       <View style={{flex:1}}>
-        <MyHeader title="DONATE RECIPE"/>
+        <MyHeader title="Donate Recipe" navigation ={this.props.navigation}/>
         <View style={{flex:1}}>
           {
             this.state.requestedRecipeList.length === 0
@@ -88,20 +88,20 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     alignItems:'center'
   },
-  button:{
+ button:{
     width:150,
-        height:50,
-        justifyContent:'center',
-        alignItems:'center',
-        borderRadius:25,
-        backgroundColor:"#ff00c3",
-        shadowColor: "#000",
-        shadowOffset: {
-           width: 0,
-           height: 8,
-        },
-        shadowOpacity: 0.30,
-        shadowRadius: 10.32,
-        elevation: 16,
+    height:50,
+    justifyContent:'center',
+    alignItems:'center',
+    borderRadius:25,
+    backgroundColor:"#ff00c3",
+    shadowColor: "#000",
+    shadowOffset: {
+       width: 0,
+       height: 8,
+    },
+    shadowOpacity: 0.30,
+    shadowRadius: 10.32,
+    elevation: 16,
   }
 })

@@ -3,7 +3,6 @@ import { createStackNavigator } from 'react-navigation-stack';
 
 import FoodDonateScreen from '../screens/FoodDonateScreen';
 import RecieverDetailsScreen  from '../screens/RecieverDetailsScreen';
-import RecieverDetailsScreen1 from '../screens/RecieverDetailsScreen1';
 import NotificationScreen from '../screens/NotificationScreen'
 
 

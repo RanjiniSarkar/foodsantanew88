@@ -11,12 +11,12 @@ import db from '../config';
 import firebase from 'firebase';
 import MyHeader from '../components/MyHeader'
 
-export default class RecipeRequestScreen extends Component{
+export default class RequestScreen extends Component{
   constructor(){
     super();
     this.state ={
       userId : firebase.auth().currentUser.email,
-      recipe:"",
+      recipeName:"",
       reasonToRequest:""
     }
   }
@@ -33,8 +33,8 @@ export default class RecipeRequestScreen extends Component{
     db.collection('requested_recipe').add({
         "user_id": userId,
         "recipe_name":recipeName,
-        "reason_ToRequest":reasonToRequest,
-        "request_id"  : randomRequestId,
+        "reason_to_request":reasonToRequest,
+        "request_id_recipe"  : randomRequestId,
     })
 
     this.setState({
@@ -42,18 +42,18 @@ export default class RecipeRequestScreen extends Component{
         reasonToRequest : ''
     })
 
-    return Alert.alert(" Recipe Requested Successfully")
+    return Alert.alert("Recipe Requested Successfully")
   }
 
 
   render(){
     return(
         <View style={{flex:1}}>
-          <MyHeader title="REQUEST RECIPE"/>
+          <MyHeader title="Request Recipe" navigation ={this.props.navigation}/>
             <KeyboardAvoidingView style={styles.keyBoardStyle}>
               <TextInput
                 style ={styles.formTextInput}
-                placeholder={"ENTER RECIPE NAME"}
+                placeholder={"enter recipe name"}
                 onChangeText={(text)=>{
                     this.setState({
                         recipeName:text
@@ -65,7 +65,7 @@ export default class RecipeRequestScreen extends Component{
                 style ={[styles.formTextInput,{height:300}]}
                 multiline
                 numberOfLines ={8}
-                placeholder={"REASON TO REQUEST"}
+                placeholder={"Why do you need the recipe"}
                 onChangeText ={(text)=>{
                     this.setState({
                         reasonToRequest:text
@@ -77,7 +77,7 @@ export default class RecipeRequestScreen extends Component{
                 style={styles.button}
                 onPress={()=>{this.addRequest(this.state.recipeName,this.state.reasonToRequest)}}
                 >
-                <Text style={{color:'white'}}>Request</Text>
+                <Text>Request</Text>
               </TouchableOpacity>
             </KeyboardAvoidingView>
         </View>

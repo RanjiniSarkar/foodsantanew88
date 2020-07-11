@@ -5,27 +5,27 @@ import firebase from 'firebase';
 
 import db from '../config.js';
 
-export default class RecieverDetailsScreen extends Component{
+export default class RecipeRecieverDetailsScreen extends Component{
   constructor(props){
     super(props);
     this.state={
       userId          : firebase.auth().currentUser.email,
       userName        : "",
-      recieverId      : this.props.navigation.getParam('details')["user_id"],
-      requestId       : this.props.navigation.getParam('details')["request_id"],
+      recieveId      : this.props.navigation.getParam('details')["user_id"],
+      recipeRequestId       : this.props.navigation.getParam('details')["request_id_recipe"],
       recipeName        : this.props.navigation.getParam('details')["recipe_name"],
       reasonToRequest    : this.props.navigation.getParam('details')["reason_to_request"],
       recieverName    : '',
       recieverContact : '',
       recieverAddress : '',
-      recieverRequestDocId : ''
+      recipeRecieverRequestDocId : ''
     }
   }
 
 
 
   getRecieverDetails(){
-    db.collection('users').where('email_id','==',this.state.recieverId).get()
+    db.collection('users').where('email_id','==',this.state.recieveId).get()
     .then(snapshot=>{
       snapshot.forEach(doc=>{
         this.setState({
@@ -36,10 +36,10 @@ export default class RecieverDetailsScreen extends Component{
       })
     });
 
-    db.collection('requested_recipe').where('request_id','==',this.state.requestId).get()
+    db.collection('requested_recipe').where('request_id_recipe','==',this.state.recipeRequestId).get()
     .then(snapshot=>{
       snapshot.forEach(doc => {
-        this.setState({recieverRequestDocId:doc.id})
+        this.setState({recipeRecieverRequestDocId:doc.id})
      })
   })}
 
@@ -56,12 +56,12 @@ export default class RecieverDetailsScreen extends Component{
   }
 
   updateRecipeStatus=()=>{
-    db.collection('all_rdonations').add({
-      "recipe_name"           : this.state.recipename,
-      "request_id"          : this.state.requestId,
+    db.collection('all_donations_recipe').add({
+      "recipe_name"           : this.state.recipeName,
+      "request_id_recipe"          : this.state.recipeRequestId,
       "requested_by"        : this.state.recieverName,
       "donor_id"            : this.state.userId,
-      "request_status"      :  "Donor Interested"
+      "request_status_recipe"      :  "Donor Interested"
     })
   }
 
@@ -71,7 +71,7 @@ export default class RecieverDetailsScreen extends Component{
     db.collection("all_notifications").add({
       "targeted_user_id"    : this.state.recieverId,
       "donor_id"            : this.state.userId,
-      "request_id"          : this.state.requestId,
+      "request_id_recipe"          : this.state.recipeRequestId,
       "recipe_name"           : this.state.recipeName,
       "date"                : firebase.firestore.FieldValue.serverTimestamp(),
       "notification_status" : "unread",
@@ -106,7 +106,7 @@ export default class RecieverDetailsScreen extends Component{
                 <Text style={{fontWeight:'bold'}}>Name : {this.state.recipeName}</Text>
               </Card>
               <Card>
-                <Text style={{fontWeight:'bold'}}>Health Issues : {this.state.reason_to_request}</Text>
+                <Text style={{fontWeight:'bold'}}>Reason : {this.state.reason_to_request}</Text>
               </Card>
             </Card>
           </View>
@@ -128,7 +128,7 @@ export default class RecieverDetailsScreen extends Component{
           </View>
           <View style = {styles.buttonContainer}>
             {
-              this.state.recieverId !== this.state.userId
+              this.state.recieveId !== this.state.userId
               ?(
                 <TouchableOpacity
                     style={styles.button}
