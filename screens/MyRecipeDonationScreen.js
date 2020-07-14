@@ -11,7 +11,7 @@ export default class MyRecipeDonationScreen extends Component {
      this.state = {
        donorId : firebase.auth().currentUser.email,
        donorName : "",
-       allDonationsRecipe : []
+       allRDonations : []
      }
      this.requestRef= null
    }
@@ -29,49 +29,49 @@ export default class MyRecipeDonationScreen extends Component {
      })
    }
 
-   getAllDonations =()=>{
-     this.requestRef = db.collection("all_donations_recipe").where("donor_id" ,'==', this.state.donorId)
+   getAllRDonations =()=>{
+     this.requestRef = db.collection("all_rdonations").where("donor_id" ,'==', this.state.donorId)
      .onSnapshot((snapshot)=>{
-       var allDonationsRecipe = []
+       var allRDonations = []
        snapshot.docs.map((doc) =>{
          var donation = doc.data()
          donation["doc_id"] = doc.id
-         allDonationsRecipe.push(donation)
+         allRDonations.push(donation)
        });
        this.setState({
-         allDonationsRecipe : allDonationsRecipe
+         allRDonations : allRDonations
        });
      })
    }
 
    sendRecipe=(recipeDetails)=>{
-     if(recipeDetails.request_status_recipe === " Sent"){
-       var recipeRequestStatus = "Donor Interested"
-       db.collection("all_donations_recipe").doc(recipeDetails.doc_id).update({
-         "request_status_recipe" : "Donor Interested"
+     if(recipeDetails.request_status === "Recipe Sent"){
+       var requestStatus = "Donor Interested"
+       db.collection("all_rdonations").doc(recipeDetails.doc_id).update({
+         "request_status" : "Donor Interested"
        })
-       this.sendNotification(recipeDetails,recipeRequestStatus)
+       this.sendNotification(recipeDetails,requestStatus)
      }
      else{
-       var recipeRequestStatus = "Recipe Sent"
-       db.collection("all_donations_recipe").doc(recipeDetails.doc_id).update({
-         "request_status_recipe" : "recipe Sent"
+       var requestStatus = "Recipe Sent"
+       db.collection("all_rdonations").doc(recipeDetails.doc_id).update({
+         "request_status" : "Recipe Sent"
        })
-       this.sendNotification(recipeDetails,recipeRequestStatus)
+       this.sendNotification(recipeDetails,requestStatus)
      }
    }
 
-   sendNotification=(recipeDetails,recipeRequestStatus)=>{
-     var recipeRequestId = recipeDetails.request_id_recipe
+   sendNotification=(recipeDetails,requestStatus)=>{
+     var requestId = recipeDetails.request_id
      var donorId = recipeDetails.donor_id
      db.collection("all_notifications")
-     .where("request_id_recipe","==", recipeRequestId)
+     .where("request_id","==", requestId)
      .where("donor_id","==",donorId)
      .get()
      .then((snapshot)=>{
        snapshot.forEach((doc) => {
          var message = ""
-         if(recipeRequestStatus === "recipe Sent"){
+         if(requestStatus === "Recipe Sent"){
            message = this.state.donorName + " sent you recipe"
          }else{
             message =  this.state.donorName  + " has shown interest in donating the recipe"
@@ -91,7 +91,7 @@ export default class MyRecipeDonationScreen extends Component {
      <ListItem
        key={i}
        title={item.recipe_name}
-       subtitle={"Requested By : " + item.requested_by +"\nStatus : " + item.request_status_recipe}
+       subtitle={"Requested By : " + item.requested_by +"\nStatus : " + item.request_status}
        leftElement={<Icon name="recipe" type="font-awesome" color ='#696969'/>}
        titleStyle={{ color: 'black', fontWeight: 'bold' }}
        rightElement={
@@ -99,7 +99,7 @@ export default class MyRecipeDonationScreen extends Component {
             style={[
               styles.button,
               {
-                backgroundColor : item.request_status_recipe === "Recipe Sent" ? "#0099ff" : "#ff00c3"
+                backgroundColor : item.request_status === "Recipe Sent" ? "#0099ff" : "#ff00c3"
               }
             ]}
             onPress = {()=>{
@@ -107,7 +107,7 @@ export default class MyRecipeDonationScreen extends Component {
             }}
            >
              <Text style={{color:'#ffff'}}>{
-               item.request_status_recipe === "Recipe Sent" ? "Recipe Sent" : "Send Recipe"
+               item.request_status === "Recipe Sent" ? "Recipe Sent" : "Send Recipe"
              }</Text>
            </TouchableOpacity>
          }
@@ -118,7 +118,7 @@ export default class MyRecipeDonationScreen extends Component {
 
    componentDidMount(){
      this.getDonorDetails(this.state.donorId)
-     this.getAllDonations()
+     this.getAllRDonations()
    }
 
    componentWillUnmount(){
@@ -128,10 +128,10 @@ export default class MyRecipeDonationScreen extends Component {
    render(){
      return(
        <View style={{flex:1}}>
-         <MyHeader navigation={this.props.navigation} title="My RecipeDonations"/>
+         <MyHeader navigation={this.props.navigation} title="My Donations"/>
          <View style={{flex:1}}>
            {
-             this.state.allDonationsRecipe.length === 0
+             this.state.allRDonations.length === 0
              ?(
                <View style={styles.subtitle}>
                  <Text style={{ fontSize: 20}}>List of all recipe Donations</Text>
@@ -140,7 +140,7 @@ export default class MyRecipeDonationScreen extends Component {
              :(
                <FlatList
                  keyExtractor={this.keyExtractor}
-                 data={this.state.allDonationsRecipe}
+                 data={this.state.allRDonations}
                  renderItem={this.renderItem}
                />
              )

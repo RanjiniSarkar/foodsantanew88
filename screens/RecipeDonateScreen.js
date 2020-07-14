@@ -44,7 +44,7 @@ export default class RecipeDonateScreen extends Component{
         rightElement={
             <TouchableOpacity style={styles.button}
             onPress ={()=>{
-              this.props.navigation.navigate("RecieverDetailsRecipe",{"details": item})
+              this.props.navigation.navigate("RecieverDetails1",{"details": item})
             }}
             >
               <Text style={{color:'#ffff'}}>View</Text>
@@ -58,7 +58,7 @@ export default class RecipeDonateScreen extends Component{
   render(){
     return(
       <View style={{flex:1}}>
-        <MyHeader title="Donate Recipe" navigation ={this.props.navigation}/>
+        <MyHeader title="Donate Recipe"/>
         <View style={{flex:1}}>
           {
             this.state.requestedRecipeList.length === 0

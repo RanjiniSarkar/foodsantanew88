@@ -1,9 +1,9 @@
 import React from 'react';
 import { createStackNavigator } from 'react-navigation-stack';
 
-import RecipeDonateScreen from '../screens/RecipeDonateScreen';
-import RecipeRecieverDetailsScreen  from '../screens/RecieverDetailsScreenR';
-import NotificationScreen from '../screens/NotificationScreen'
+import RecipeDonateScreen from '../screens/RecipeDonateScreen'
+import RecieverDetailsScreen1 from '../screens/RecieverDetailsScreen1';
+
 
 
 
@@ -15,19 +15,12 @@ export const AppStackNavigator1 = createStackNavigator({
       headerShown : false
     }
   },
-  RecieverDetailsRecipe : {
-    screen : RecipeRecieverDetailsScreen,
-    navigationOptions:{
-      headerShown : false
+  RecieverDetails1 :{
+    screen: RecieverDetailsScreen1,
+    navigateOptions:{
+    headerShown: false
     }
   },
-  
-  Notification : {
-    screen : NotificationScreen,
-    navigationOptions:{
-      headerShown : false
-    }
-  }
 },
 
 

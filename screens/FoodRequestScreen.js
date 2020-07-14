@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   StyleSheet,
   TouchableOpacity,
+  ScrollView,
   Alert} from 'react-native';
 import db from '../config';
 import firebase from 'firebase';
@@ -17,7 +18,13 @@ export default class FoodRequestScreen extends Component{
     this.state ={
       userId : firebase.auth().currentUser.email,
       foodName:"",
-      healthIssues:""
+      healthIssues:"",
+      IsFoodRequestActive : "",
+      requestedFoodName: "",
+      Foodstatus:"",
+      requestId:"",
+      userDocId: '',
+      docId :''
     }
   }
 
@@ -35,25 +42,187 @@ export default class FoodRequestScreen extends Component{
         "food_name":foodName,
         "health_issues":healthIssues,
         "request_id"  : randomRequestId,
+        "food_status": "requested",
+        "date"       : firebase.firestore.FieldValue.serverTimestamp(),
+    });
+
+   getFoodRequest()
+    db.collection('users').where("email_id","==",userId).get()
+    .then()
+    .then((snapshot)=>{
+      snapshot.forEach((doc)=>{
+        db.collection('users').doc(doc.id).update({
+      IsFoodRequestActive: true
+      })
     })
+  })
+
 
     this.setState({
         foodName :'',
-        healthIssues : ''
+        healthIssues : '',
+        requestId: randomRequestId
     })
 
     return Alert.alert("Food Requested Successfully")
+
+
   }
+
+receivedFood=(foodName)=>{
+  var userId = this.state.userId
+  var requestId = this.state.requestId
+  db.collection('received_food').add({
+      "user_id": userId,
+      "food_name":foodName,
+      "request_id"  : requestId,
+      "foodStatus"  : "received",
+
+  })
+}
+
+
+
+
+getIsFoodRequestActive(){
+  db.collection('users')
+  .where('email_id','==',this.state.userId)
+  .onSnapshot(querySnapshot => {
+    querySnapshot.forEach(doc => {
+      this.setState({
+        IsFoodRequestActive:doc.data().IsFoodRequestActive,
+        userDocId : doc.id
+      })
+    })
+  })
+}
+
+
+
+
+
+
+
+
+
+
+getFoodRequest= ()=> {
+  
+var foodRequest =  db.collection('requested_food')
+  .where('user_id','==',this.state.userId)
+  .get()
+  .then((snapshot)=>{
+    snapshot.forEach((doc)=>{
+      if(doc.data().food_status !== "received"){
+        this.setState({
+          requestId : doc.data().request_id,
+          requestedFoodName: doc.data().food_name,
+          foodStatus:doc.data().food_status,
+          docId     : doc.id
+        })
+      }
+    })
+})}
+
+
+
+sendNotification=()=>{
+  //to get the first name and last name
+  db.collection('users').where('email_id','==',this.state.userId).get()
+  .then((snapshot)=>{
+    snapshot.forEach((doc)=>{
+      var name = doc.data().first_name
+      var lastName = doc.data().last_name
+
+    
+      db.collection('all_notifications').where('request_id','==',this.state.requestId).get()
+      .then((snapshot)=>{
+        snapshot.forEach((doc) => {
+          var donorId  = doc.data().donor_id
+          var foodName =  doc.data().food_name
+
+          //targert user id is the donor id to send notification to the user
+          db.collection('all_notifications').add({
+            "targeted_user_id" : donorId,
+            "message" : name +" " + lastName + " received the food " + foodName ,
+            "notification_status" : "unread",
+            "food_name" : foodName
+          })
+        })
+      })
+    })
+  })
+}
+
+componentDidMount(){
+  this.getFoodRequest()
+  this.getIsFoodRequestActive()
+
+}
+
+updateFoodRequestStatus=()=>{
+  
+  db.collection('requested_food').doc(this.state.docId)
+  .update({
+    food_status : 'recieved'
+  })
+
+  //getting the  doc id to update the users doc
+  db.collection('users').where('email_id','==',this.state.userId).get()
+  .then((snapshot)=>{
+    snapshot.forEach((doc) => {
+      //updating the doc
+      db.collection('users').doc(doc.id).update({
+        IsFoodRequestActive: false
+      })
+    })
+  })
+
+
+}
 
 
   render(){
+
+    if(this.state.IsFoodRequestActive === true){
+      return(
+
+        // Status screen
+
+        <View style = {{flex:1,justifyContent:'center'}}>
+          <View style={{borderColor:"orange",borderWidth:2,justifyContent:'center',alignItems:'center',padding:10,margin:10}}>
+          <Text>Food Name</Text>
+          <Text>{this.state.requestedFoodName}</Text>
+          </View>
+          <View style={{borderColor:"orange",borderWidth:2,justifyContent:'center',alignItems:'center',padding:10,margin:10}}>
+          <Text> Food Status </Text>
+
+          <Text>{this.state.foodStatus}</Text>
+          </View>
+
+          <TouchableOpacity style={{borderWidth:1,borderColor:'orange',backgroundColor:"orange",width:300,alignSelf:'center',alignItems:'center',height:30,marginTop:30}}
+          onPress={()=>{
+            this.sendNotification()
+            this.updateFoodRequestStatus();
+            this.receivedFood(this.state.requestedFoodName)
+          }}>
+          <Text>I recieved the food </Text>
+          </TouchableOpacity>
+        </View>
+      )
+    }
+    else
+    {
     return(
+      // Form screen
         <View style={{flex:1}}>
-          <MyHeader title="REQUEST FOOD"/>
+          <MyHeader title="Request Food" navigation ={this.props.navigation}/>
+
+          <ScrollView>
             <KeyboardAvoidingView style={styles.keyBoardStyle}>
               <TextInput
                 style ={styles.formTextInput}
-                placeholder={"ENTER FOOD NAME"}
+                placeholder={"enter food name"}
                 onChangeText={(text)=>{
                     this.setState({
                         foodName:text
@@ -65,24 +234,28 @@ export default class FoodRequestScreen extends Component{
                 style ={[styles.formTextInput,{height:300}]}
                 multiline
                 numberOfLines ={8}
-                placeholder={"ANY HEALTH ISSUES"}
+                placeholder={"Do you have any health isssues?"}
                 onChangeText ={(text)=>{
                     this.setState({
-                        healthIssues:text
+                      healthIssues:text
                     })
                 }}
                 value ={this.state.healthIssues}
               />
               <TouchableOpacity
                 style={styles.button}
-                onPress={()=>{this.addRequest(this.state.foodName,this.state.healthIssues)}}
+                onPress={()=>{ this.addRequest(this.state.foodName,this.state.healthIssues);
+                }}
                 >
-                <Text style= {{color:'white'}}>REQUEST</Text>
+                <Text>Request</Text>
               </TouchableOpacity>
+
             </KeyboardAvoidingView>
+            </ScrollView>
         </View>
     )
   }
+}
 }
 
 const styles = StyleSheet.create({
