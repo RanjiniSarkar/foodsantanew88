@@ -17,7 +17,8 @@ import React, {Component} from 'react';
             address:'',
             contact:'',
             confirmPassword:'',
-            isModalVisible:'false'
+            isModalVisible:'false',
+            currencyCode:""
         }
     }
     userLogin = (emailId, password)=>{
@@ -45,7 +46,8 @@ import React, {Component} from 'react';
             'last_name':this.state.lastName,
             'contact':this.state.contact,
             'email_id':this.state.emailId,
-            'address':this.state.address
+            'address':this.state.address,
+            'currency_code':this.state.currencyCode
           })
           return  Alert.alert(
             'User Added Successfully',
@@ -145,6 +147,16 @@ import React, {Component} from 'react';
               confirmPassword:text
             })
           }}  
+          />
+           <TextInput
+            style={styles.formTextInput}
+            placeholder ={"Country currency code"}
+            maxLength ={8}
+            onChangeText={(text)=>{
+              this.setState({
+                currencyCode: text
+              })
+            }}
           />
           <View style={styles.modalBackButton}>
           <TouchableOpacity

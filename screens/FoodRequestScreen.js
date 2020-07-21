@@ -24,7 +24,9 @@ export default class FoodRequestScreen extends Component{
       Foodstatus:"",
       requestId:"",
       userDocId: '',
-      docId :''
+      docId :'',
+      value:'',
+      currencyCode:""
     }
   }
 
@@ -43,6 +45,7 @@ export default class FoodRequestScreen extends Component{
         "health_issues":healthIssues,
         "request_id"  : randomRequestId,
         "food_status": "requested",
+        "value":this.state.value,
         "date"       : firebase.firestore.FieldValue.serverTimestamp(),
     });
 
@@ -61,6 +64,7 @@ export default class FoodRequestScreen extends Component{
     this.setState({
         foodName :'',
         healthIssues : '',
+        value:'',
         requestId: randomRequestId
     })
 
@@ -91,7 +95,8 @@ getIsFoodRequestActive(){
     querySnapshot.forEach(doc => {
       this.setState({
         IsFoodRequestActive:doc.data().IsFoodRequestActive,
-        userDocId : doc.id
+        userDocId : doc.id,
+        currencyCode: doc.data().currency_code
       })
     })
   })
@@ -118,6 +123,7 @@ var foodRequest =  db.collection('requested_food')
           requestId : doc.data().request_id,
           requestedFoodName: doc.data().food_name,
           foodStatus:doc.data().food_status,
+          value:doc.data().value,
           docId     : doc.id
         })
       }
@@ -153,10 +159,23 @@ sendNotification=()=>{
     })
   })
 }
+getData(){
+  fetch("http://data.fixer.io/api/latest?access_key=1f7dd48123a05ae588283b5e13fae944&format=1")
+  .then(response=>{
+    return response.json();
+  }).then(responseData =>{
+    var currencyCode = this.state.currencyCode
+    var currency = responseData.rates.INR
+    var value =  69 / currency
+    console.log(value);
+  })
+  }
+
 
 componentDidMount(){
   this.getFoodRequest()
   this.getIsFoodRequestActive()
+  this.getData()
 
 }
 
@@ -199,6 +218,13 @@ updateFoodRequestStatus=()=>{
 
           <Text>{this.state.foodStatus}</Text>
           </View>
+          
+          <View style={{borderColor:"orange",borderWidth:2,justifyContent:'center',alignItems:'center',padding:10,margin:10}}>
+         <Text> Item Value </Text>
+
+         <Text>{this.state.value}</Text>
+          </View>
+
 
           <TouchableOpacity style={{borderWidth:1,borderColor:'orange',backgroundColor:"orange",width:300,alignSelf:'center',alignItems:'center',height:30,marginTop:30}}
           onPress={()=>{
@@ -242,11 +268,23 @@ updateFoodRequestStatus=()=>{
                 }}
                 value ={this.state.healthIssues}
               />
+               <TextInput
+            style={styles.formTextInput}
+            placeholder ={"Value"}
+            maxLength ={8}
+            onChangeText={(text)=>{
+              this.setState({
+                value: text
+              })
+            }}
+            value={this.state.value}
+          />
               <TouchableOpacity
                 style={styles.button}
                 onPress={()=>{ this.addRequest(this.state.foodName,this.state.healthIssues);
                 }}
                 >
+
                 <Text>Request</Text>
               </TouchableOpacity>
 
